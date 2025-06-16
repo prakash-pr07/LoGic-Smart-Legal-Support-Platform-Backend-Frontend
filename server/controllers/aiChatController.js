@@ -1,11 +1,13 @@
 import { OpenAI } from "openai";
 
+import dotenv from "dotenv";
+dotenv.config();
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const chatWithAI = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { question } = req.body;
 
     const systemPrompt = `
 You are a helpful and knowledgeable Indian Legal Assistant AI.
