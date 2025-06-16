@@ -1,21 +1,29 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// ✅ Middleware to check if user is authenticated
+// Middleware to check if user is authenticated
 export const isAuthenticated = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
-
   try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
     next();
   } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
-// ✅ Check if user is Client
+// Check if user is Client
 export const isClient = (req, res, next) => {
   if (req.user.role !== "Client") {
     return res.status(403).json({ message: "Access denied. Client only." });
@@ -23,7 +31,7 @@ export const isClient = (req, res, next) => {
   next();
 };
 
-// ✅ Check if user is Lawyer
+// Check if user is Lawyer
 export const isLawyer = (req, res, next) => {
   if (req.user.role !== "Lawyer") {
     return res.status(403).json({ message: "Access denied. Lawyer only." });
@@ -31,7 +39,7 @@ export const isLawyer = (req, res, next) => {
   next();
 };
 
-// ✅ Check if user is Admin
+// Check if user is Admin
 export const isAdmin = (req, res, next) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ error: "Access denied. Admins only." });
@@ -39,7 +47,7 @@ export const isAdmin = (req, res, next) => {
   next();
 };
 
-// ✅ Check if user is Premium
+// Check if user is Premium
 export const checkPremium = (req, res, next) => {
   if (!req.user || !req.user.isPremium) {
     return res.status(403).json({ message: "Access denied. Premium required." });

@@ -34,8 +34,8 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log("✅ MongoDB connected"))
-.catch((err) => console.error("❌ MongoDB connection error:", err));
+.then(() => console.log("MongoDB connected"))
+.catch((err) => console.error(" MongoDB connection error:", err));
 
 // Middleware
 app.use(cors());
@@ -57,6 +57,7 @@ import lawyerRoutes from "./routes/lawyerRoutes.js";
 import aiChatRoutes from "./routes/aiChatRoute.js";      // ✅ Fixed route name
 import chatRoutes from "./routes/chatRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 import otpRoutes from "./routes/otpRoutes.js";
 
@@ -64,6 +65,7 @@ import otpRoutes from "./routes/otpRoutes.js";
 import testRoutes from "./routes/testRoutes.js";
 app.use("/api/test", testRoutes); // Mounts at /api/test
 
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // Mount Routes
 app.use("/api/otp", otpRoutes);
@@ -74,17 +76,18 @@ app.use("/api/chatbot", chatbotRoutes);
 // app.use("/api/document", documentRoutes);
 app.use("/api/ngos", ngoRoutes);
 app.use("/api/lawyer", lawyerRoutes);
-app.use("/api/chat", aiChatRoutes);        // ✅ Use different path to avoid conflict
+app.use("/api/chat", aiChatRoutes);        // Use different path to avoid conflict
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Socket.IO Logic
 io.on("connection", (socket) => {
-  console.log("🟢 Socket connected:", socket.id);
+  console.log("Socket connected:", socket.id);
 
   socket.on("joinRoom", ({ userId }) => {
     socket.join(userId);
-    console.log(`🛏️ User ${userId} joined their room`);
+    console.log(`User ${userId} joined their room`);
   });
 
   socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
@@ -92,17 +95,17 @@ io.on("connection", (socket) => {
       const newMsg = await ChatMessage.create({ sender: senderId, receiver: receiverId, message });
       io.to(receiverId).emit("receiveMessage", newMsg);
     } catch (err) {
-      console.error("❌ Socket message error:", err.message);
+      console.error(" Socket message error:", err.message);
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("🔴 Socket disconnected:", socket.id);
+    console.log("Socket disconnected:", socket.id);
   });
 });
 
 // Start Server
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
