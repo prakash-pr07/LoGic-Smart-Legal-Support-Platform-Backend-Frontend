@@ -25,7 +25,7 @@ export const verifyOtp = async (contact, enteredOtp) => {
   }
 };
 
-// ✅ Login Logic
+// Login Logic
 export const loginUser = async (credentials) => {
   const res = await fetch("http://localhost:8000/api/auth/login", {
     method: "POST",
@@ -39,3 +39,8 @@ export const loginUser = async (credentials) => {
   return data;
 };
 
+// Finding Lowyer logic
+export const fetchLawyersByCity = async (city) => {
+  const res = await axios.get(`http://localhost:8000/api/lawyers/search?city=${city}`);
+  return res.data.lawyers;
+};

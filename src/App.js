@@ -7,6 +7,9 @@ import SignupPage from "./pages/SignupPage";
 import Navbar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ChatbotPage from "./pages/ChatbotPage"; 
+import DashboardPage from "./pages/DashboardPage";
+import FindLawyersPage from "./pages/FindLawyersPage";
 // Import your page components here, e.g.
 // import PublicHomePage from "./pages/PublicHomePage";
 // import LoginPage from "./pages/Login";
@@ -31,6 +34,9 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/chatbot" element={<ChatbotPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/lawyers" element={<FindLawyersPage />} />
         </Routes>
 
         <ToastContainer position="top-right" autoClose={3000} />
